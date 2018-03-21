@@ -7,19 +7,19 @@ dirs = [(-1, -1), (-1, 0), (-1, +1),
         ( 0, -1), ( 0, +1),(+1, -1),
         (+1, 0), (+1, +1)]
 
-def pixelSpread(gray, clickXY, pix_val):
-    col, row = clickXY
+def pixelSpread(gray, clickPos, pix_val):
+    row, col = clickPos
+    # No effect when clicked in the white area
+    if (gray[row][col] == 1): return
+    gray[row][col] = pix_val
     print("coordinate is ", (row, col))
     for dir in dirs:
-        newRow, newCol = row, col
         drow, dcol = dir
-        while posLegal(newRow, newCol):
-            print(newRow, newCol)
-            gray[newRow][newCol] = pix_val
-            newRow += drow
-            newCol += dcol
-    gray[0][0] = 0.3
-    print("pixel spread complete")
+        newRow, newCol = row + drow, col + dcol
+        if (posLegal(newRow, newCol) and gray[newRow][newCol] not in [pix_val, 1]):
+            pixelSpread(gray, (newRow, newCol), pix_val)
+    # gray[0][0] = 0.3
+    # print("pixel spread complete")
 
 
 def posLegal(newRow, newCol):
@@ -32,12 +32,12 @@ def rgb2gray(rgb):
 
 def onclick(event):
     global gray
-    clickXY = (0, 0) # the xy coordinate of user's click
+    clickPos = (0, 0) # the xy coordinate of user's click
     if event.xdata != None and event.ydata != None:
-        clickXY = (int(event.xdata), int(event.ydata))
+        clickPos = (int(event.ydata), int(event.xdata))
         fig.canvas.mpl_disconnect(cid)
         plt.close()
-        pixelSpread(gray, clickXY, 0.5)
+        pixelSpread(gray, clickPos, 0.5)
         new_gray = plt.imshow(gray, cmap = plt.get_cmap('gray'))
         print(gray)
         plt.show()
