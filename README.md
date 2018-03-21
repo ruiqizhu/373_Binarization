@@ -1,2 +1,4 @@
-# 373_Binorization
-This is an app for CMU 67373 consulting project. This app takes images as input and turns it into black and white so that users can identify oocytes in the image more easily. 
+# 373_Binarization
+This is an app called Oocyte Binarization for CMU 67373 consulting project. It is designed for researchers in Kodiak Laboratory to perform crab oocyte area analysis more easily and efficiently.
+It uses python script and machine learning to first preprocess the image into greyscale using a formula and then turning binarize it into black and white based on a threshold the user gives.
+After the image is processed, the app harnesses crowdsourcing to let students identify the oocytes manually. The students click on the oocyte and the app automatically detects the entire oocyte the student clicks and calculates the area automatically. For each oocyte, if a certain number of students click on the same oocyte, that oocyte will be marked as valid and its area will be saved for data analysis. 

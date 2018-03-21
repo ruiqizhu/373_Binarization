@@ -18,8 +18,6 @@ def pixelSpread(gray, clickPos, pix_val):
         newRow, newCol = row + drow, col + dcol
         if (posLegal(newRow, newCol) and gray[newRow][newCol] not in [pix_val, 1]):
             pixelSpread(gray, (newRow, newCol), pix_val)
-    # gray[0][0] = 0.3
-    # print("pixel spread complete")
 
 
 def posLegal(newRow, newCol):
@@ -50,9 +48,6 @@ if __name__ == '__main__':
     threshold = float(sys.argv[2]) # threshold for black & white
     img = mpimg.imread(image)
     gray = rgb2gray(img)
-    # print(gray)
-    # show_gray = plt.imshow(gray, cmap = plt.get_cmap('gray'))
-    # plt.show()
     height = len(gray)
     width = len(gray[0])
     for row in range(0, height):
@@ -66,5 +61,4 @@ if __name__ == '__main__':
     fig = plt.gcf()
     implot = ax.imshow(gray, cmap = plt.get_cmap('gray'))
     cid = fig.canvas.mpl_connect('button_press_event', onclick)
-    # print(gray)
     plt.show()
