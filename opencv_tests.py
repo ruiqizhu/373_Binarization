@@ -32,7 +32,7 @@ from skimage.morphology import disk
 orig_phantom = img_as_ubyte(io.imread( "test.png", as_grey = True))
 fig, ax = plt.subplots()
 
-selem = disk(25)
+selem = disk(26)
 closed = closing(orig_phantom, selem)
 ax.imshow(closed, cmap=plt.cm.gray)
 
@@ -66,7 +66,7 @@ labeled_img = cv2.merge([label_hue, blank_ch, blank_ch])
 labeled_img = cv2.cvtColor(labeled_img, cv2.COLOR_HSV2BGR)
 
 # set bg label to black
-labeled_img[label_hue==0] = 0
+labeled_img[label_hue==0] = 1
 
 print("Num labels: " + str(num_labels))
 print("Labels: " + str(labels))
