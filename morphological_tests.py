@@ -31,9 +31,15 @@ if __name__ == '__main__':
 	selem = disk(25)
 	#Dilation - separates well, doesn't preserve size well
 	#dilated = dilation(orig_phantom, selem)
+	
 	#Closing - preserves size, separates oocytes ok
 	closed = closing(orig_phantom, selem)
+	
 	#Opening - really bad, not useful at all
 	#opened = opening(orig_phantom, selem)
+
+	#Skeletonizing - just looks cool
+	#sk = skeletonize(orig_phantom == 0)
+
 	plot_comparison(orig_phantom, closed, 'closing')
 
