@@ -1,7 +1,9 @@
 import numpy as np
+import pylab
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import sys
+import os
 
 dirs = [(-1, -1), (-1, 0), (-1, +1),
         ( 0, -1), ( 0, +1),(+1, -1),
@@ -12,7 +14,7 @@ def pixelSpread(gray, clickPos, pix_val):
     # No effect when clicked in the white area
     if (gray[row][col] == 1): return
     gray[row][col] = pix_val
-    print("coordinate is ", (row, col))
+    #print("coordinate is ", (row, col))
     for dir in dirs:
         drow, dcol = dir
         newRow, newCol = row + drow, col + dcol
@@ -62,3 +64,4 @@ if __name__ == '__main__':
     implot = ax.imshow(gray, cmap = plt.get_cmap('gray'))
     cid = fig.canvas.mpl_connect('button_press_event', onclick)
     plt.show()
+    
