@@ -1,4 +1,4 @@
-
+import math
 import cv2
 import numpy as np
 import pylab
@@ -13,6 +13,22 @@ from skimage.morphology import erosion, dilation, opening, closing, white_tophat
 from skimage.morphology import black_tophat, skeletonize, convex_hull_image
 from skimage.morphology import disk
 
+def distance(p0, p1):
+    return math.sqrt((p0[0] - p1[0])**2 + (p0[1] - p1[1])**2)
+
+def click_oocyte(event, x, y, flags, param):
+	if event == cv2.EVENT_LBUTTONDOWN:
+		pt = (x,y)
+		print(pt)
+		min_dist = -1
+		mindex = -1
+		for i in range(0, int(centroids.size / 2) , 1):
+			dist = distance(pt, centroids[i])
+			if(dist < min_dist or min_dist == -1):
+				min_dist = dist
+				mindex = i
+		print(mindex)
+	return 1
 # src = cv2.imread("test.png", 0)
 # binary_map = (src > 0).astype(np.uint8)
 # connectivity = 4 # or whatever you prefer
@@ -66,11 +82,14 @@ labeled_img = cv2.merge([label_hue, blank_ch, blank_ch])
 labeled_img = cv2.cvtColor(labeled_img, cv2.COLOR_HSV2BGR)
 
 # set bg label to black
-labeled_img[label_hue==0] = 1
+labeled_img[label_hue==0] = 255
 
 print("Num labels: " + str(num_labels))
 print("Labels: " + str(labels))
 print("Stats: " + str(stats))
 print("Centroids: " + str(centroids))
-cv2.imshow('labeled.png', labeled_img)
+
+
+cv2.imshow('labeled', labeled_img)
+cv2.setMouseCallback("labeled", click_oocyte)
 cv2.waitKey()
