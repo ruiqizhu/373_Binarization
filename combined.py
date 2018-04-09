@@ -47,29 +47,23 @@ if __name__ == '__main__':
 				gray[row][col] = 1 # turn the pixel white
 			else:
 				gray[row][col] = 0 # turn the pixel black
-    # Connecting mouse click event to the position clicked
 
-	#Read in the image
-	#orig_phantom = img_as_ubyte(io.imread( "test.png", as_grey = True))
-	#fig, ax = plt.subplots()
-
-	#Perform the filtering
+	#Resize the image
 	resized = cv2.resize(gray, (0,0), fx=.25, fy=.25)
+
+	#Create a structuring element and filter the image
 	selem = disk(25)
 	img = closing(img_as_ubyte(resized), selem)
-	#ax.imshow(closed, cmap=plt.cm.gray)
+	
 
 	#Read in the filtered image and label it
-	#img = cv2.imread('filtered.png', 0)
-	
 	img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)[1]  # ensure binary
 	img = cv2.bitwise_not(img)
-	connectivity = 4 # or whatever you prefer
+	connectivity = 100
 	output = cv2.connectedComponentsWithStats(img, connectivity, cv2.CV_32S)
 	binary_map = (img > 0).astype(np.uint8)
 
-	#ret, labels = cv2.connectedComponents(img)
-
+	#The first cell is the number of identified components
 	num_labels = output[0]
 	# The second cell is the label matrix
 	labels = output[1]
