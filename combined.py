@@ -1,5 +1,7 @@
 import math
 import cv2
+import os, sys
+from PIL import Image
 import numpy as np
 import pylab
 import matplotlib.pyplot as plt
@@ -38,7 +40,15 @@ def rgb2gray(rgb):
 if __name__ == '__main__':
     img_name = sys.argv[1] # image file name
     threshold = .4
-    original = mpimg.imread(img_name)
+
+    #Resize the image
+    size = 648 , 486
+    im = Image.open(img_name)
+    im.thumbnail(size, Image.ANTIALIAS)
+    im.save("resized.png")
+    original = mpimg.imread("resized.png")
+    
+    #Binarize the image
     gray = rgb2gray(original)
     height = len(gray)
     width = len(gray[0])
@@ -49,12 +59,12 @@ if __name__ == '__main__':
             else:
                 gray[row][col] = 0 # turn the pixel black
 
-    #Resize the image
-    resized = cv2.resize(gray, (0,0), fx=.25, fy=.25)
+
+    
 
     #Create a structuring element and filter the image
     selem = disk(25)
-    img = closing(img_as_ubyte(resized), selem)
+    img = closing(img_as_ubyte(gray), selem)
     
 
     #Read in the filtered image and label it
@@ -91,13 +101,11 @@ if __name__ == '__main__':
 
 
     cv2.imshow('labeled', labeled_img)
+    cv2.imwrite("labeled.png", labeled_img)
     cv2.setMouseCallback("labeled", click_oocyte)
     cv2.waitKey()
-    print(np.array2string(stats[1][4]))
     with open('area.csv', 'w', newline='') as csvfile:
         areawriter = csv.writer(csvfile, delimiter=' ',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for i in range(1, len(stats)):
-            #areawriter.writerow(['Spam'] * 5 + ['Baked Beans'])
             areawriter.writerow([np.array2string(stats[i][4]) + "," + np.array2string(centroids[i][0]) + "," + np.array2string(centroids[i][1])] )
-            #areawriter.writerow(['Spam', 'Lovely Spam', 'Wonderful Spam'])
