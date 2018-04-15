@@ -22,7 +22,6 @@ def distance(p0, p1):
 def click_oocyte(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
         pt = (x,y)
-        print(pt)
         min_dist = -1
         mindex = -1
         for i in range(0, int(centroids.size / 2) , 1):
@@ -45,11 +44,15 @@ if __name__ == '__main__':
     size = 648 , 486
     im = Image.open(img_name)
     im.thumbnail(size, Image.ANTIALIAS)
-    im.save("resized.png")
-    original = mpimg.imread("resized.png")
-    
-    #Binarize the image
-    gray = rgb2gray(original)
+    im.save(img_name[:-4] + "_resized.png")
+    original = mpimg.imread(img_name[:-4] + "_resized.png")
+    #print(original)
+    #Binarize the image if not already greyscale
+    if(isinstance(original[0][0], np.ndarray)):
+        gray = rgb2gray(original)
+    else:
+        gray = original
+    #print(gray)
     height = len(gray)
     width = len(gray[0])
     for row in range(0, height):
@@ -101,10 +104,10 @@ if __name__ == '__main__':
 
 
     cv2.imshow('labeled', labeled_img)
-    cv2.imwrite("labeled.png", labeled_img)
+    cv2.imwrite(img_name[:-4] + "_labeled.png", labeled_img)
     cv2.setMouseCallback("labeled", click_oocyte)
     cv2.waitKey()
-    with open('area.csv', 'w', newline='') as csvfile:
+    with open(img_name[:-4] + '_area.csv', 'w', newline='') as csvfile:
         areawriter = csv.writer(csvfile, delimiter=' ',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for i in range(1, len(stats)):
