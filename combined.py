@@ -102,11 +102,11 @@ if __name__ == '__main__':
     print("Stats: " + str(stats))
     print("Centroids: " + str(centroids))
 
-
-    cv2.imshow('labeled', labeled_img)
+    #save labeled image
+    #cv2.imshow('labeled', labeled_img)
     cv2.imwrite(img_name[:-4] + "_labeled.png", labeled_img)
-    cv2.setMouseCallback("labeled", click_oocyte)
-    cv2.waitKey()
+    # cv2.setMouseCallback("labeled", click_oocyte)
+    # cv2.waitKey()
     with open(img_name[:-4] + '_area.csv', 'w', newline='') as csvfile:
         areawriter = csv.writer(csvfile, delimiter=' ',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
