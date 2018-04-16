@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import sys
 import os
+from skimage.data import data_dir
+from skimage.util import img_as_ubyte
+from skimage import io
 
 dirs = [(-1, -1), (-1, 0), (-1, +1),
         ( 0, -1), ( 0, +1),(+1, -1),
@@ -63,5 +66,8 @@ if __name__ == '__main__':
     fig = plt.gcf()
     implot = ax.imshow(gray, cmap = plt.get_cmap('gray'))
     cid = fig.canvas.mpl_connect('button_press_event', onclick)
+    plt.savefig('binary.png')
+    #dilated = dilation(orig_phantom, selem)
+    #plot_comparison(orig_phantom, dilated, 'dilation')
     plt.show()
     
