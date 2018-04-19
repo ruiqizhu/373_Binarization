@@ -48,7 +48,7 @@ if __name__ == '__main__':
                 print(img_name)
 
                 #Resize the image
-                size = 648 , 486
+                size = 580 , 486
                 im = Image.open(img_name)
                 im.thumbnail(size, Image.ANTIALIAS)
                 im.save(img_name[:-4] + "_resized.png")
