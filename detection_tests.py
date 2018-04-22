@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-
 from skimage import data, color, img_as_ubyte, io
 from skimage.feature import canny
 from skimage.transform import hough_ellipse

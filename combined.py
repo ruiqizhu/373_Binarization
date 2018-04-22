@@ -16,9 +16,11 @@ from skimage.morphology import black_tophat, skeletonize, convex_hull_image
 from skimage.morphology import disk
 import csv
 
+# calculate distance between 2 points in 2D
 def distance(p0, p1):
     return math.sqrt((p0[0] - p1[0])**2 + (p0[1] - p1[1])**2)
 
+# return the center of the oocyte clicked
 def click_oocyte(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
         pt = (x,y)
@@ -46,13 +48,11 @@ if __name__ == '__main__':
     im.thumbnail(size, Image.ANTIALIAS)
     im.save(img_name[:-4] + "_resized.png")
     original = mpimg.imread(img_name[:-4] + "_resized.png")
-    #print(original)
     #Binarize the image if not already greyscale
     if(isinstance(original[0][0], np.ndarray)):
         gray = rgb2gray(original)
     else:
         gray = original
-    #print(gray)
     height = len(gray)
     width = len(gray[0])
     for row in range(0, height):
@@ -62,8 +62,6 @@ if __name__ == '__main__':
             else:
                 gray[row][col] = 0 # turn the pixel black
 
-
-    
 
     #Create a structuring element and filter the image
     selem = disk(25)
