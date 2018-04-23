@@ -35,7 +35,6 @@ def rgb2gray(rgb):
     return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
 
 if __name__ == '__main__':
-
 	#Read in the image
 	orig_phantom = img_as_ubyte(io.imread( "binary.png", as_grey = True))
 	#fig, ax = plt.subplots()

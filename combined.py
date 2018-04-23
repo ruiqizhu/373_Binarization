@@ -16,9 +16,11 @@ from skimage.morphology import black_tophat, skeletonize, convex_hull_image
 from skimage.morphology import disk
 import csv
 
+# calculate distance between 2 points in 2D
 def distance(p0, p1):
     return math.sqrt((p0[0] - p1[0])**2 + (p0[1] - p1[1])**2)
 
+# return the center of the oocyte clicked
 def click_oocyte(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
         pt = (x,y)

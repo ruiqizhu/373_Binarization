@@ -13,7 +13,6 @@ from skimage.morphology import disk
 
 
 def plot_comparison(original, filtered, filter_name):
-
     fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(8, 4), sharex=True,
                                    sharey=True)
     ax1.imshow(original, cmap=plt.cm.gray)
