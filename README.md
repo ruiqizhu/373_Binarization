@@ -7,16 +7,27 @@ Process_images.py is run from the command line and takes in a folder name as an 
 `python process_images.py images`
 	
 The images directory specified in the command must be configured a specific way. It expects a directory structure within the specified folder with crab sample numbers as the folder name with individual images inside of it. An example directory is displayed below:
+
 	-images
+
 		-0
+
 			-untitled000.tif
+
 			-untitled001.tif
+		
 		-1
+		
 			-untitled000.tif
+		
 		-2
+		
 			-untitled000.tif
+		
 		-3
+		
 			-untitled000.tif
+		
 		-4
 
 ##Result
