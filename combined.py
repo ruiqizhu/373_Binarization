@@ -16,25 +16,65 @@ from skimage.morphology import black_tophat, skeletonize, convex_hull_image
 from skimage.morphology import disk
 import csv
 
-def distance(p0, p1):
-    return math.sqrt((p0[0] - p1[0])**2 + (p0[1] - p1[1])**2)
-
-def click_oocyte(event, x, y, flags, param):
-    if event == cv2.EVENT_LBUTTONDOWN:
-        pt = (x,y)
-        min_dist = -1
-        mindex = -1
-        for i in range(0, int(centroids.size / 2) , 1):
-            dist = distance(pt, centroids[i])
-            if(dist < min_dist or min_dist == -1):
-                min_dist = dist
-                mindex = i
-        print(mindex)
-        return mindex
-
 # calculate the greyscale value of each pixel
 def rgb2gray(rgb):
     return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
+
+#Performs the binarization process with a threshold of .4
+def binarize_image(original):
+    #Binarize the image if not already greyscale
+    if(isinstance(original[0][0], np.ndarray)):
+        gray = rgb2gray(original)
+    else:
+        gray = original
+    #print(gray)
+    height = len(gray)
+    width = len(gray[0])
+    for row in range(0, height):
+        for col in range(0, width):
+            if gray[row][col] > .4:
+                gray[row][col] = 1 # turn the pixel white
+            else:
+                gray[row][col] = 0 # turn the pixel black
+    return gray
+
+#Performs the morphological filtering operation on a grayscale image
+def filter_image(gray):
+    #Create a structuring element and filter the image
+    selem = disk(25)
+    img = closing(img_as_ubyte(gray), selem)
+
+    #Read in the filtered image and label it
+    img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)[1]  # ensure binary
+    img = cv2.bitwise_not(img)
+    connectivity = 100
+    output = cv2.connectedComponentsWithStats(img, connectivity, cv2.CV_32S)
+    #binary_map = (img > 0).astype(np.uint8)
+    labels = output[1]
+
+    # Map component labels to hue val
+    label_hue = np.uint8(179*labels/np.max(labels))
+    blank_ch = 255*np.ones_like(label_hue)
+    labeled_img = cv2.merge([label_hue, blank_ch, blank_ch])
+
+    # cvt to BGR for display
+    labeled_img = cv2.cvtColor(labeled_img, cv2.COLOR_HSV2BGR)
+
+    # set bg label to black
+    labeled_img[label_hue==0] = 255
+    return output, labeled_img
+
+#Takes in the labeled image and what it should be called, saves the labeled
+#version and outputs a csv with its xcenter, ycenter, and pixel area
+def save_image_and_csv(image_name, labeled_img, stats, centroids):
+    #save labeled image
+                cv2.imwrite(image_name[:-4] + "_labeled.png", labeled_img)
+               
+                with open(image_name[:-4] + '_area.csv', 'w', newline='') as csvfile:
+                    areawriter = csv.writer(csvfile, delimiter=' ',
+                                            quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                    for i in range(1, len(stats)):
+                        areawriter.writerow([np.array2string(stats[i][4]) + "," + np.array2string(centroids[i][0]) + "," + np.array2string(centroids[i][1])] )
 
 if __name__ == '__main__':
     folder = sys.argv[1] #top level of directory where images are
@@ -44,8 +84,6 @@ if __name__ == '__main__':
             
             if(filename[-4:] == ".tif"):
                 img_name = subdir + '/' + filename
-                threshold = .4
-                print(img_name)
 
                 #Resize the image
                 size = 580 , 486
@@ -53,65 +91,17 @@ if __name__ == '__main__':
                 im.thumbnail(size, Image.ANTIALIAS)
                 im.save(img_name[:-4] + "_resized.png")
                 original = mpimg.imread(img_name[:-4] + "_resized.png")
-                #print(original)
-                #Binarize the image if not already greyscale
-                if(isinstance(original[0][0], np.ndarray)):
-                    gray = rgb2gray(original)
-                else:
-                    gray = original
-                #print(gray)
-                height = len(gray)
-                width = len(gray[0])
-                for row in range(0, height):
-                    for col in range(0, width):
-                        if gray[row][col] > threshold:
-                            gray[row][col] = 1 # turn the pixel white
-                        else:
-                            gray[row][col] = 0 # turn the pixel black
-
-
                 
+                #binarize the image
+                gray = binarize_image(original)
 
-                #Create a structuring element and filter the image
-                selem = disk(25)
-                img = closing(img_as_ubyte(gray), selem)
-                
-
-                #Read in the filtered image and label it
-                img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)[1]  # ensure binary
-                img = cv2.bitwise_not(img)
-                connectivity = 100
-                output = cv2.connectedComponentsWithStats(img, connectivity, cv2.CV_32S)
-                binary_map = (img > 0).astype(np.uint8)
-
-                #The first cell is the number of identified components
-                num_labels = output[0]
-                # The second cell is the label matrix
-                labels = output[1]
+                #perform morphological filtering
+                output, labeled_img = filter_image(gray)
+        
                 # The third cell is the stat matrix
                 stats = output[2]
                 # The fourth cell is the centroid matrix
                 centroids = output[3]
 
-
-                # Map component labels to hue val
-                label_hue = np.uint8(179*labels/np.max(labels))
-                blank_ch = 255*np.ones_like(label_hue)
-                labeled_img = cv2.merge([label_hue, blank_ch, blank_ch])
-
-                # cvt to BGR for display
-                labeled_img = cv2.cvtColor(labeled_img, cv2.COLOR_HSV2BGR)
-
-                # set bg label to black
-                labeled_img[label_hue==0] = 255
-
-                #save labeled image
-                #cv2.imshow('labeled', labeled_img)
-                cv2.imwrite(img_name[:-4] + "_labeled.png", labeled_img)
-                # cv2.setMouseCallback("labeled", click_oocyte)
-                # cv2.waitKey()
-                with open(img_name[:-4] + '_area.csv', 'w', newline='') as csvfile:
-                    areawriter = csv.writer(csvfile, delimiter=' ',
-                                            quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                    for i in range(1, len(stats)):
-                        areawriter.writerow([np.array2string(stats[i][4]) + "," + np.array2string(centroids[i][0]) + "," + np.array2string(centroids[i][1])] )
+                save_image_and_csv(img_name, labeled_img, stats, centroids)
+                
